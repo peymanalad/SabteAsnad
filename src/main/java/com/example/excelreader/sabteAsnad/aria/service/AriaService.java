@@ -32,7 +32,7 @@ public class AriaService {
         for (int i = 0; i < list.size(); i = i + 12) {
             Aria aria = new Aria();
             aria.setTrn(list.get(i));
-            aria.setValueDate(LocalDate.parse(list.get(i + 1),dateOnly));
+            aria.setValueDate(list.get(i + 1));
             aria.setAmount(Long.parseLong(list.get(i + 2)));
             aria.setCurrency(list.get(i + 3));
             aria.setOriginalMessageType(list.get(i + 4));

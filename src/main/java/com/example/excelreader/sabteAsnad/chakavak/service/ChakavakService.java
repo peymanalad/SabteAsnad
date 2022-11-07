@@ -8,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
@@ -42,9 +41,21 @@ public class ChakavakService {
 
         String chakavak = "select debit_party,amount,value_date from asnad.aria as aria " +
                 "where original_message_type = 'MLN' and message_status = 'Settled' " +
-                "and aria.debit_party = 'BMJIIRTHCIS' ";
+                "and aria.submitter = 'BMJIIRTHCIS' and (aria.value_date = ? or aria.value_date = ?)";
 
         PreparedStatement chakavakStatement = connection.prepareStatement(chakavak);
+        if (Helper.getDayOfWeek() == 0 || Helper.getDayOfWeek() == 6) {
+            System.out.println("تراکنش چکاوک برای این روز ثبت نمیشود");
+            return;
+        }
+        else if (Helper.getDayOfWeek() == 5) {
+            chakavakStatement.setString(1,Helper.getYesterdayDate());
+            chakavakStatement.setString(2,Helper.getTodayDate());
+        }
+        else {
+            chakavakStatement.setString(1,Helper.getYesterdayDate());
+            chakavakStatement.setString(2,Helper.getYesterdayDate());
+        }
         ResultSet chakavakResultSet = chakavakStatement.executeQuery();
 
         chakavakLiquidation(chakavakResultSet);

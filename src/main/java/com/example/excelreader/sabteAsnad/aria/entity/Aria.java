@@ -19,7 +19,7 @@ public class Aria {
     @Id
     private String trn;
     @DateTimeFormat(pattern = "yyyy/mm/dd")
-    private LocalDate valueDate;
+    private String valueDate;
     private Long amount;
     private String currency;
     private String originalMessageType;

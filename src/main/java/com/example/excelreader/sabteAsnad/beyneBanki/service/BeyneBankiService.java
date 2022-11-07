@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.text.ParseException;
-import java.time.LocalDate;
+
 
 @Service
 public class BeyneBankiService {
@@ -46,16 +45,18 @@ public class BeyneBankiService {
                 "(select transaction_id,amount from asnad.b2bvarede_entity) as varede on " +
                 "aria.trn = varede.transaction_id " +
                 "where original_message_type = 'MQ202' and message_status = 'Settled' " +
-                "and aria.credit_party = 'NOORIRTHXXX'";
+                "and aria.credit_party = 'NOORIRTHXXX' and aria.value_date = ?";
 
         String sadere = "select * from asnad.aria as aria inner join " +
                 "(select transaction_id,amount from asnad.b2bsadere_entity) as sadere on " +
                 "aria.trn = sadere.transaction_id " +
                 "where original_message_type = 'MQ202' and message_status = 'Settled' " +
-                "and aria.debit_party = 'NOORIRTHXXX' ";
+                "and aria.debit_party = 'NOORIRTHXXX' and aria.value_date = ?";
 
         PreparedStatement sadereStatement = Helper.getConnection().prepareStatement(sadere);
         PreparedStatement varedeStatement = Helper.getConnection().prepareStatement(varede);
+        sadereStatement.setString(1,Helper.getYesterdayDate());
+        varedeStatement.setString(1,Helper.getYesterdayDate());
         ResultSet sadereResultSet = sadereStatement.executeQuery();
         ResultSet varedeResultSet = varedeStatement.executeQuery();
 
