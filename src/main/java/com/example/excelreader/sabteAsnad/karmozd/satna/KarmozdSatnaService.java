@@ -41,14 +41,15 @@ public class KarmozdSatnaService {
 
         String karmozd = "select amount,value_date from asnad.aria " +
                 "where original_message_type = 'MLN' and message_status = 'Settled' " +
-                "and submitter = 'BMJIIRTHRTG'";
+                "and submitter = 'BMJIIRTHRTG' and value_date = ?";
 
         PreparedStatement karmozdStatement = Helper.getConnection().prepareStatement(karmozd);
+        karmozdStatement.setString(1,Helper.getYesterdayDate());
         ResultSet karmozdResultSet = karmozdStatement.executeQuery();
 
         karmozdSatna(karmozdResultSet);
 
-        FileOutputStream fos = new FileOutputStream("C:\\Users\\p.alad\\Desktop\\Excel.xlsx");
+        FileOutputStream fos = new FileOutputStream("C:\\Users\\p.alad\\Desktop\\KarmozdSatna.xlsx");
         this.workbook.write(fos);
         this.workbook.close();
     }

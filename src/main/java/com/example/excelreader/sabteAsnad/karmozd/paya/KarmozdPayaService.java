@@ -37,31 +37,28 @@ public class KarmozdPayaService {
 
     public void createKarmozdPayaExcel() throws SQLException, IOException {
 
-        String karmozdByC = "select sum(amount),value_date from asnad.aria " +
-                "where original_message_type = 'MLN' and message_status = 'Settled' " +
-                "and submitter = 'BMJIIRTHACH' and trn like '000921C%'";
+        String query = "select sum(amount) from asnad.aria where original_message_type = 'MLN' and submitter = 'BMJIIRTHACH' and trn like '000921C0%'";
 
-        String karmozdByF = "select sum (amount),value_date from asnad.aria " +
-                "where original_message_type = 'MLN' and message_status = 'Settled' " +
-                "and submitter = 'BMJIIRTHACH' and trn like '000921F'";
+        String payaDebit = query + "and debit_party = 'NOORIRTHXXX' and value_date = ?";
 
-        PreparedStatement karmozdByCStatement = Helper.getConnection().prepareStatement(karmozdByC);
-        PreparedStatement karmozdByFStatement = Helper.getConnection().prepareStatement(karmozdByF);
-        Long one = karmozdByCStatement.executeQuery().getLong(1);
-        Long two = karmozdByFStatement.executeQuery().getLong(1);
-        if (one > two) {
-            karmozdDaryafti(String.valueOf(one));
-        } else {
-            karmozdPardakhti(String.valueOf(two));
-        }
+        String payaCredit = query + "and credit_party = 'NOORIRTHXXX' and value_date = ?";
 
-        FileOutputStream fos = new FileOutputStream("C:\\Users\\p.alad\\Desktop\\Excel.xlsx");
+        PreparedStatement debitStatement = Helper.getConnection().prepareStatement(payaDebit);
+        PreparedStatement creditStatement = Helper.getConnection().prepareStatement(payaCredit);
+        debitStatement.setString(1,Helper.getYesterdayDate());
+        creditStatement.setString(1,Helper.getYesterdayDate());
+        ResultSet debitResultSet = debitStatement.executeQuery();
+        ResultSet creditResultSet = creditStatement.executeQuery();
+        debitResultSet.next();
+        creditResultSet.next();
+        Long karmozd = debitResultSet.getLong(1) - creditResultSet.getLong(1);
+
+        FileOutputStream fos = new FileOutputStream("C:\\Users\\p.alad\\Desktop\\KarmozdPaya.xlsx");
         this.workbook.write(fos);
         this.workbook.close();
     }
 
-
-    public void karmozdDaryafti(String value) {
+    public void karmozd(Long karmozd) {
         sheet.createRow(this.rowCount++).createCell(0).setCellValue("ثبت سند کارمزد دریافتی پایا");
         sheet.getRow(this.rowCount - 1).getCell(0).setCellStyle(Helper.fontStyle(fontStyle,this.font));
         Helper.fillHeader(this.rowCount,this.sheet,this.headerStyle);
@@ -79,7 +76,7 @@ public class KarmozdPayaService {
         row.getCell(column + 3).setCellStyle(Helper.createBodyStyle(bodyStyle));
         row.createCell(column + 4).setCellValue("");
         row.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 5).setCellValue(value);
+        row.createCell(column + 5).setCellValue(karmozd);
         row.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));
         row.createCell(column + 6).setCellValue("");
         row.getCell(column + 6).setCellStyle(Helper.createBodyStyle(bodyStyle));
@@ -96,48 +93,7 @@ public class KarmozdPayaService {
         row2.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
         row2.createCell(column + 5).setCellValue("");
         row2.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 6).setCellValue(value);
+        row2.createCell(column + 6).setCellValue(karmozd);
         row2.getCell(column + 6).setCellStyle(Helper.createBodyStyle(bodyStyle));
     }
-
-    public void karmozdPardakhti(String value) {
-        sheet.createRow(this.rowCount++).createCell(0).setCellValue("ثبت سند کارمزد پرداختی پایا");
-        sheet.getRow(this.rowCount - 1).getCell(0).setCellStyle(Helper.fontStyle(fontStyle,this.font));
-        Helper.fillHeader(this.rowCount,this.sheet,this.headerStyle);
-        rowCount++;
-        int j = 1;
-        int column = 0;
-        Row row = sheet.createRow(this.rowCount++);
-        row.createCell(column).setCellValue(j++);
-        row.getCell(column).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 1).setCellValue("0650");
-        row.getCell(column + 1).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 2).setCellValue("52809103");
-        row.getCell(column + 2).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 3).setCellValue("");
-        row.getCell(column + 3).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 4).setCellValue("کارمزد پرداخی حواله پایا");
-        row.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 5).setCellValue(value);
-        row.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 6).setCellValue("");
-        row.getCell(column + 6).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        Row row2 = sheet.createRow(this.rowCount++);
-        row2.createCell(column).setCellValue(j);
-        row2.getCell(column).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 1).setCellValue("0650");
-        row2.getCell(column + 1).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 2).setCellValue("00800101");
-        row2.getCell(column + 2).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 3).setCellValue("حساب جاری نزد بانک مرکزی");
-        row2.getCell(column + 3).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 4).setCellValue("کارمزد دریافتی");
-        row2.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 5).setCellValue("");
-        row2.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 6).setCellValue(value);
-        row2.getCell(column + 6).setCellStyle(Helper.createBodyStyle(bodyStyle));
-    }
-
-
 }

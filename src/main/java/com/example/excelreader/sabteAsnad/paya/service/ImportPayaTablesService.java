@@ -3,9 +3,12 @@ package com.example.excelreader.sabteAsnad.paya.service;
 import com.example.excelreader.sabteAsnad.Helper;
 import com.example.excelreader.sabteAsnad.paya.dao.*;
 import com.example.excelreader.sabteAsnad.paya.entity.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -243,6 +246,14 @@ public class ImportPayaTablesService {
             list.add(j,flag);
         }
         return list;
+    }
+
+    public Long incommingShaparak(MultipartFile multipartFile) throws IOException {
+        return Long.parseLong(
+                new XSSFWorkbook(multipartFile.getInputStream())
+                        .getSheetAt(0).getRow(3)
+                        .getCell(2).getStringCellValue());
+
     }
 
 

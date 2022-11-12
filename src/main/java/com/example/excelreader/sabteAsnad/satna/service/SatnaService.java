@@ -1,11 +1,9 @@
 package com.example.excelreader.sabteAsnad.satna.service;
 
 import com.example.excelreader.sabteAsnad.Helper;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -49,13 +47,18 @@ public class SatnaService {
                 "on aria.trn = varede.transaction_id and aria.amount = varede.amount " +
                 "where aria.original_message_type = 'MQ103' " +
                 "and aria.credit_party = 'NOORIRTHXXX' " +
-                "and aria.message_status = 'Settled'";
+                "and aria.message_status = 'Settled'" +
+                "and aria.value_date = ?";
 
-        String satnaSadere = "select amount,trn,value_date from asnad.aria where original_message_type = 'MQ103'" +
-                "and credit_party = 'NOORIRTHXXX' and message_status = 'Settled'";
+        String satnaSadere = "select amount,trn,value_date from asnad.aria " +
+                "where original_message_type = 'MQ103'" +
+                "and credit_party = 'NOORIRTHXXX' and message_status = 'Settled'" +
+                "and value_date = ?";
 
         PreparedStatement varedeStatement = Helper.getConnection().prepareStatement(query);
+        varedeStatement.setString(1,Helper.getYesterdayDate());
         PreparedStatement sadereStatement = Helper.getConnection().prepareStatement(satnaSadere);
+        sadereStatement.setString(1,Helper.getYesterdayDate());
         ResultSet varedeResultSet = varedeStatement.executeQuery();
         ResultSet sadereResultSet = sadereStatement.executeQuery();
 

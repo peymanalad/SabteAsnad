@@ -1,9 +1,6 @@
 package com.example.excelreader.sabteAsnad.shetab.service;
 
 import com.example.excelreader.sabteAsnad.Helper;
-import com.ibm.icu.text.DateFormat;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.ULocale;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,9 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.util.Date;
 
 @Service
 public class ShetabService {
@@ -46,23 +40,25 @@ public class ShetabService {
         String beyneBanki = "select amount from asnad.aria " +
                 "where original_message_type = 'MLN' and message_status = 'Settled' " +
                 "and submitter = 'BMJIIRTHSHB' and debit_party = 'NOORIRTHXXX' " +
-                "and trn like '%2234'";
+                "and trn like '%2234' and value_date = ?";
 
-        /*String shetabBedehkar = "select * from asnad.aria " +
+        String shetabBedehkar = "select * from asnad.aria " +
                 "where original_message_type = 'MLN' and message_status = 'Settled' " +
-                "and submitter = 'BMJIIRTHSHB' and debit_party = 'NOORIRTHXXX'";
+                "and submitter = 'BMJIIRTHSHB' and debit_party = 'NOORIRTHXXX'" +
+                "and value_date = ?";
 
         String shetabBestankar = "select * from asnad.aria " +
                 "where original_message_type = 'MLN' and message_status = 'Settled' " +
-                "and submitter = 'BMJIIRTHSHB' and credit_party = 'NOORIRTHXXX'";*/
+                "and submitter = 'BMJIIRTHSHB' and credit_party = 'NOORIRTHXXX'" +
+                "and value_date = ?";
 
         PreparedStatement beyneBankiStatement = Helper.getConnection().prepareStatement(beyneBanki);
-        /*PreparedStatement bedehkarStatement = Helper.getConnection().prepareStatement(shetabBedehkar);
-        PreparedStatement bestankarStatement = Helper.getConnection().prepareStatement(shetabBestankar);*/
+        PreparedStatement bedehkarStatement = Helper.getConnection().prepareStatement(shetabBedehkar);
+        PreparedStatement bestankarStatement = Helper.getConnection().prepareStatement(shetabBestankar);
+        beyneBankiStatement.setString(1,Helper.getYesterdayDate());
         ResultSet beyneBankiResultSet = beyneBankiStatement.executeQuery();
         beyneBankiResultSet.next();
         Long beyneBankiAmount = beyneBankiResultSet.getLong("amount");
-
 
         beyneBanki(beyneBankiAmount);
         karmozd();
@@ -73,7 +69,7 @@ public class ShetabService {
         this.workbook.close();
     }
 
-    public void beyneBanki(Long value) throws SQLException {
+    public void beyneBanki(Long value) {
         sheet.createRow(this.rowCount++).createCell(0).setCellValue("ثبت سند بین بانکی شتاب");
         sheet.getRow(this.rowCount - 1).getCell(0).setCellStyle(Helper.fontStyle(fontStyle,this.font));
         Helper.fillHeader(this.rowCount,this.sheet,this.headerStyle);

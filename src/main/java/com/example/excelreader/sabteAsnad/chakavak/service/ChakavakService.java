@@ -36,14 +36,12 @@ public class ChakavakService {
     }
 
     public void createChakavakExcel() throws SQLException, IOException {
-        Connection connection = DriverManager
-                .getConnection("jdbc:mysql://localhost:3306/sabt", "root", "Pp135642!#%^$@");
 
         String chakavak = "select debit_party,amount,value_date from asnad.aria as aria " +
                 "where original_message_type = 'MLN' and message_status = 'Settled' " +
                 "and aria.submitter = 'BMJIIRTHCIS' and (aria.value_date = ? or aria.value_date = ?)";
 
-        PreparedStatement chakavakStatement = connection.prepareStatement(chakavak);
+        PreparedStatement chakavakStatement = Helper.getConnection().prepareStatement(chakavak);
         if (Helper.getDayOfWeek() == 0 || Helper.getDayOfWeek() == 6) {
             System.out.println("تراکنش چکاوک برای این روز ثبت نمیشود");
             return;

@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.io.IOException;
 import java.sql.SQLException;
 
 @RestController
@@ -34,7 +33,7 @@ public record PayaController (PayaService payaService) {
     public void saveRejectTransaction (@RequestParam("paya") MultipartFile multipartFile) {
         payaService.saveRejectTransaction(multipartFile);
     }
-
+    
     @PostMapping("/11")
     public void saveRetRegTransaction (@RequestParam("paya") MultipartFile multipartFile) {
         payaService.saveRetRegTransaction(multipartFile);
@@ -45,7 +44,13 @@ public record PayaController (PayaService payaService) {
         payaService.saveRetShaparakTransaction(multipartFile);
     }
 
-    public void paya() throws SQLException {
+    @PostMapping("/shaparak")
+    public void shaparak(@RequestParam("shaparak") MultipartFile multipartFile) throws IOException {
+        payaService.amountFromShaparak(multipartFile);
+    }
+
+    @PostMapping
+    public void paya() throws SQLException, IOException {
         payaService.createPayaExcel();
     }
 
