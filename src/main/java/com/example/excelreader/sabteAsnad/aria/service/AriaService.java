@@ -3,15 +3,14 @@ package com.example.excelreader.sabteAsnad.aria.service;
 import com.example.excelreader.sabteAsnad.Helper;
 import com.example.excelreader.sabteAsnad.aria.dao.AriaDao;
 import com.example.excelreader.sabteAsnad.aria.entity.Aria;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class AriaService {
@@ -26,7 +25,7 @@ public class AriaService {
 
     public ResponseEntity<?> getExcelDataAsList(MultipartFile multipartFile) throws ParseException {
 
-        List<String> list = Helper.getAsList(multipartFile);
+        List<String> list = Helper.getAsList(multipartFile,3);
 
         List<Aria> ariaList = new ArrayList<>();
         for (int i = 0; i < list.size(); i = i + 12) {

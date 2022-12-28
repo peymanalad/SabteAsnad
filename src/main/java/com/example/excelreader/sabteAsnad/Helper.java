@@ -28,12 +28,11 @@ public class Helper {
         return fileName.endsWith(".xlsx");
     }
 
-    public static List<String> getAsList (MultipartFile multipartFile) {
+    public static List<String> getAsList (MultipartFile multipartFile, Integer lineNumber) {
         XSSFWorkbook workbook = null;
         DataFormatter dataFormatter = new DataFormatter();
         List<String> list = new ArrayList<>();
         try {
-
             workbook = new XSSFWorkbook(multipartFile.getInputStream());
         } catch (EncryptedDocumentException | IOException e) {
             e.printStackTrace();
@@ -41,7 +40,7 @@ public class Helper {
         int j = 0;
         Sheet sheet = workbook.getSheetAt(0);
         for (Row row : sheet) {
-            if (j != 0) {
+            if (j > lineNumber) {
                 for (Cell cell : row) {
                     String cellValue = dataFormatter.formatCellValue(cell);
                     list.add(cellValue);
@@ -60,6 +59,7 @@ public class Helper {
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         return cellStyle;
     }
 
@@ -78,6 +78,7 @@ public class Helper {
 
     public static void fillHeader(Integer rowCount, XSSFSheet sheet,CellStyle headerStyle) {
         XSSFRow header = sheet.createRow(rowCount);
+        header.setHeight((short) 400);
         for (int i = 0; i < HEADERS.length; i++) {
             sheet.setColumnWidth(i,25 * 300);
             Cell cell = header.createCell(i);
@@ -135,6 +136,10 @@ public class Helper {
             return year + "/0" + m + "/" + (Integer.parseInt(day)-1);
         }
         else return year + "/" + m + "/" + (Integer.parseInt(day)-1);
+    }
+
+    public static String getDateWithoutSlash(String date) {
+        return date.replace("/","");
     }
 
     public static String getTodayDate() {

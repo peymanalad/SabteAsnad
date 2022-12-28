@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping
+@RequestMapping("/aria")
 public record AriaController(AriaService ariaService) {
 
 

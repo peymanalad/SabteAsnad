@@ -39,7 +39,7 @@ public class ChakavakService {
 
         String chakavak = "select debit_party,amount,value_date from asnad.aria as aria " +
                 "where original_message_type = 'MLN' and message_status = 'Settled' " +
-                "and aria.submitter = 'BMJIIRTHCIS' and (aria.value_date = ? or aria.value_date = ?)";
+                "and aria.submitter = 'BMJIIRTHCIS' and aria.value_date in (?,?)";
 
         PreparedStatement chakavakStatement = Helper.getConnection().prepareStatement(chakavak);
         if (Helper.getDayOfWeek() == 0 || Helper.getDayOfWeek() == 6) {
@@ -80,7 +80,7 @@ public class ChakavakService {
             row.getCell(column + 2).setCellStyle(Helper.createBodyStyle(bodyStyle));
             row.createCell(column + 3).setCellValue("حساب جاری نزد بانک مرکزی");
             row.getCell(column + 3).setCellStyle(Helper.createBodyStyle(bodyStyle));
-            row.createCell(column + 4).setCellValue("تسویه سند بین بانکی چکاوک");
+            row.createCell(column + 4).setCellValue(Helper.getYesterdayDate()+"تسویه سند بین بانکی چکاوک ");
             row.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
             row.createCell(column + 5).setCellValue("");
             row.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));
@@ -95,7 +95,7 @@ public class ChakavakService {
             row2.getCell(column + 2).setCellStyle(Helper.createBodyStyle(bodyStyle));
             row2.createCell(column + 3).setCellValue("بین بانکها(حساب ما)چکاوک");
             row2.getCell(column + 3).setCellStyle(Helper.createBodyStyle(bodyStyle));
-            row2.createCell(column + 4).setCellValue("تسویه سند بین بانکی چکاوک");
+            row2.createCell(column + 4).setCellValue(Helper.getYesterdayDate()+"تسویه سند بین بانکی چکاوک ");
             row2.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
             row2.createCell(column + 5).setCellValue("");
             row2.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));

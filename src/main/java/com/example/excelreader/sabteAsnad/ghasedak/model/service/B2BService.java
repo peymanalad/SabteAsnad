@@ -18,7 +18,7 @@ public record B2BService (B2BSadereRepository b2BSadereRepository,
 
     public ResponseEntity<?> saveB2BSadere(MultipartFile multipartFile) {
 
-        List<String> list = Helper.getAsList(multipartFile);
+        List<String> list = Helper.getAsList(multipartFile,9);
 
         List<B2BSadereEntity> b2bList = new ArrayList<>();
         for (int i = 0; i < list.size(); i = i + 5) {
@@ -35,7 +35,7 @@ public record B2BService (B2BSadereRepository b2BSadereRepository,
 
     public ResponseEntity<?> saveB2BVarede(MultipartFile multipartFile) {
 
-        List<String> list = Helper.getAsList(multipartFile);
+        List<String> list = Helper.getAsList(multipartFile,9);
 
         List<B2BVaredeEntity> b2bList = new ArrayList<>();
         for (int i = 0; i < list.size(); i = i + 5) {

@@ -37,7 +37,10 @@ public class KarmozdPayaService {
 
     public void createKarmozdPayaExcel() throws SQLException, IOException {
 
-        String query = "select sum(amount) from asnad.aria where original_message_type = 'MLN' and submitter = 'BMJIIRTHACH' and trn like '000921C0%'";
+        String query = "select sum(amount) from asnad.aria "
+            + "where original_message_type = 'MLN' "
+            + "and submitter = 'BMJIIRTHACH' "
+            + "and trn like '000921C0%'";
 
         String payaDebit = query + "and debit_party = 'NOORIRTHXXX' and value_date = ?";
 
@@ -51,7 +54,9 @@ public class KarmozdPayaService {
         ResultSet creditResultSet = creditStatement.executeQuery();
         debitResultSet.next();
         creditResultSet.next();
-        Long karmozd = debitResultSet.getLong(1) - creditResultSet.getLong(1);
+        Long karmozdAmount = debitResultSet.getLong(1) - creditResultSet.getLong(1);
+
+        karmozd(karmozdAmount);
 
         FileOutputStream fos = new FileOutputStream("C:\\Users\\p.alad\\Desktop\\KarmozdPaya.xlsx");
         this.workbook.write(fos);
@@ -70,30 +75,26 @@ public class KarmozdPayaService {
         row.getCell(column).setCellStyle(Helper.createBodyStyle(bodyStyle));
         row.createCell(column + 1).setCellValue("0650");
         row.getCell(column + 1).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 2).setCellValue("00800101");
+        row.createCell(column + 2).setCellValue("52809103");
         row.getCell(column + 2).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 3).setCellValue("حساب جاری نزد بانک مرکزی");
+        row.createCell(column + 3).setCellValue("کارمزد پرداختی حواله پایا");
         row.getCell(column + 3).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 4).setCellValue("");
+        row.createCell(column + 4).setCellValue(String.valueOf(karmozd));
         row.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 5).setCellValue(karmozd);
+        row.createCell(column + 5).setCellValue("");
         row.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row.createCell(column + 6).setCellValue("");
-        row.getCell(column + 6).setCellStyle(Helper.createBodyStyle(bodyStyle));
         Row row2 = sheet.createRow(this.rowCount++);
         row2.createCell(column).setCellValue(j);
         row2.getCell(column).setCellStyle(Helper.createBodyStyle(bodyStyle));
         row2.createCell(column + 1).setCellValue("0650");
         row2.getCell(column + 1).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 2).setCellValue("52809103");
+        row2.createCell(column + 2).setCellValue("00800101");
         row2.getCell(column + 2).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 3).setCellValue("");
+        row2.createCell(column + 3).setCellValue("حساب جاری نزد بانک مرکزی");
         row2.getCell(column + 3).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 4).setCellValue("کارمزد دریافتی");
+        row2.createCell(column + 4).setCellValue("");
         row2.getCell(column + 4).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 5).setCellValue("");
+        row2.createCell(column + 5).setCellValue(String.valueOf(karmozd));
         row2.getCell(column + 5).setCellStyle(Helper.createBodyStyle(bodyStyle));
-        row2.createCell(column + 6).setCellValue(karmozd);
-        row2.getCell(column + 6).setCellStyle(Helper.createBodyStyle(bodyStyle));
     }
 }

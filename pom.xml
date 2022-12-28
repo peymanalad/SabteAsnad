@@ -11,8 +11,22 @@
     <groupId>com.example</groupId>
     <artifactId>ExcelReader</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ExcelReader</name>
-    <description>ExcelReader</description>
+    <name>Sabte-Asnad</name>
+    <description>Sabt e Asnad</description>
+
+    <organization>
+        <name>Sepehrnet Iranian</name>
+        <url>https://sepehrnetiranian.ir</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Peyman Alad</name>
+            <email>p.alad@sepehrnetiranian.ir</email>
+            <organization>${project.organization.name}</organization>
+        </developer>
+    </developers>
+
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -62,6 +76,43 @@
             <artifactId>icu4j</artifactId>
             <version>71.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>2.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ftpserver</groupId>
+            <artifactId>ftpserver-core</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-ftp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-event</artifactId>
+        </dependency>
+
+
+
+
     </dependencies>
 
     <build>

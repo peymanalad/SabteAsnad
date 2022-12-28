@@ -17,6 +17,7 @@ import java.util.Date;
 public class Aria {
 
     @Id
+    @Column(name = "transaction_id")
     private String trn;
     @DateTimeFormat(pattern = "yyyy/mm/dd")
     private String valueDate;
