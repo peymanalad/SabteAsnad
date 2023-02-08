@@ -109,8 +109,12 @@
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-event</artifactId>
         </dependency>
-
-
+      <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>RELEASE</version>
+        <scope>compile</scope>
+      </dependency>
 
 
     </dependencies>
@@ -131,5 +135,24 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.profile.id>dev</build.profile.id>
+                <profileActive>dev</profileActive>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <build.profile.id>prod</build.profile.id>
+                <profileActive>prod</profileActive>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

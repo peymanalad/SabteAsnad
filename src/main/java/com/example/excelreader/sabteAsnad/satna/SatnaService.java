@@ -1,4 +1,4 @@
-package com.example.excelreader.sabteAsnad.satna.service;
+package com.example.excelreader.sabteAsnad.satna;
 
 import com.example.excelreader.sabteAsnad.Helper;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -36,6 +37,7 @@ public class SatnaService {
         this.rowCount = 1;
     }
 
+    @Scheduled(cron = "${sabt.create.output.file.cron.job}")
     public void createSatnaExcel() throws SQLException, IOException {
 
         String satnaVarede = "select sum (amount) from asnad.aria as aria " +
@@ -50,7 +52,7 @@ public class SatnaService {
 
         PreparedStatement varedeStatement = Helper.getConnection().prepareStatement(satnaVarede);
         varedeStatement.setString(1,Helper.getYesterdayDate());
-        PreparedStatement glStatement = Helper.getConnection().prepareStatement(gl);
+        PreparedStatement glStatement = Helper.sedanDataConnection().prepareStatement(gl);
         glStatement.setString(1,Helper.getYesterdayDate().replace("/",""));
         ResultSet varedeResultSet = varedeStatement.executeQuery();
         ResultSet glResultSet = glStatement.executeQuery();

@@ -1,10 +1,23 @@
-package com.example.excelreader.sabteAsnad.paya.service;
+package com.example.excelreader.sabteAsnad.paya;
+import com.example.excelreader.cache.Start;
 import com.example.excelreader.sabteAsnad.Helper;
+import com.example.excelreader.utility.FTPUtils;
+import com.example.excelreader.utility.ZipUtils;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.rmi.RemoteException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +26,7 @@ import java.io.IOException;
 import java.sql.*;
 
 @Service
+@Slf4j
 public class PayaService {
 
     private XSSFWorkbook workbook;
@@ -22,10 +36,12 @@ public class PayaService {
     private CellStyle fontStyle;
     private Font font;
     private Integer rowCount;
-    private Long shaparak;
+    private Start start;
+
+    private String shaparakDirectory;
 
 
-    public PayaService() {
+    public PayaService(Start start) {
         this.workbook = new XSSFWorkbook();
         this.headerStyle = workbook.createCellStyle();
         this.bodyStyle = workbook.createCellStyle();
@@ -34,9 +50,10 @@ public class PayaService {
         this.sheet = workbook.createSheet("پایا");
         sheet.getCTWorksheet().getSheetViews().getSheetViewArray(0).setRightToLeft(true);
         this.rowCount = 1;
-        this.shaparak = 0L;
+        this.start = start;
     }
 
+    @Scheduled(cron = "${sabt.create.output.file.cron.job}")
     public void createPayaExcel() throws SQLException, IOException {
 
         String payaDebit = "select sum(amount) from asnad.aria " +
@@ -57,7 +74,7 @@ public class PayaService {
         creditResultSet.next();
         Long tasviePaya = debitResultSet.getLong(1) - creditResultSet.getLong(1);
 
-        long sum = tasviePaya + this.shaparak;
+        long sum = tasviePaya + shaparakFromFtp();
 
         if ((sum) < 0) {
             payaManfi(sum);
@@ -71,9 +88,34 @@ public class PayaService {
 
     }
 
-    public void amountFromShaparak(MultipartFile multipartFile) throws IOException {
-         this.shaparak = Long.parseLong(
-                new XSSFWorkbook(multipartFile.getInputStream())
+    public Long shaparakFromFtp() throws IOException {
+        boolean doneISCFTP = false;
+        log.info("Try connect to ISC FTP.");
+        FTPUtils iscFTP = new FTPUtils();
+        if (iscFTP.connect((String) start.cache.get("isc.ip"), (Integer) start.cache.get("isc.port"))) {
+            if (iscFTP.login((String) start.cache.get("isc.username"), (String) start.cache.get("isc.password"))) {
+                if (iscFTP.downloadFile("iscHostPath", "D:\\Aria_files\\aria_download_files")) {
+                    doneISCFTP = true;
+                }
+            }
+            iscFTP.disconnect();
+        }
+
+        if (doneISCFTP) {
+            Path source = Paths.get("D:\\Aria_files\\aria_download_files");
+            Path target = Paths.get(shaparakDirectory);
+            ZipUtils.extractFile(source,target,"fileName");
+            return shaparakAmount(target);
+        }
+        else {
+            throw new RemoteException("Error in incomming shaparak transaction file");
+        }
+    }
+
+    public Long shaparakAmount(Path directory) throws IOException {
+        InputStream inputStream = new FileInputStream(directory.toString());
+        return Long.parseLong(
+                new XSSFWorkbook(inputStream)
                         .getSheetAt(0).getRow(3)
                         .getCell(2).getStringCellValue());
     }

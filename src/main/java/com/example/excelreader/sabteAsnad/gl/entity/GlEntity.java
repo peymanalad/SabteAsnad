@@ -34,7 +34,4 @@ public class GlEntity {
   private Integer glId;
   private Integer complementNumber;
   private String rowId;
-
-
-
 }

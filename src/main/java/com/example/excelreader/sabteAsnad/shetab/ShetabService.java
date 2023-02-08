@@ -1,6 +1,6 @@
-package com.example.excelreader.sabteAsnad.shetab.service;
+package com.example.excelreader.sabteAsnad.shetab;
 
-import com.example.excelreader.init.Start;
+import com.example.excelreader.cache.Start;
 import com.example.excelreader.sabteAsnad.Helper;
 import com.example.excelreader.utility.FTPUtils;
 import java.io.BufferedInputStream;
@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -22,8 +20,8 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.aspectj.weaver.tools.ISupportsMessageContext;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -120,6 +118,7 @@ public class ShetabService {
         return sum;
     }
 
+    @Scheduled(cron = "${sabt.create.output.file.cron.job}")
     public void createShetabExcel() throws Exception {
 
         String beyneBanki = "select amount from asnad.aria " +

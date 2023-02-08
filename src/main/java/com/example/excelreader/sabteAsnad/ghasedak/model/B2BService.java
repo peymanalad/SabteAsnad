@@ -1,26 +1,44 @@
-package com.example.excelreader.sabteAsnad.ghasedak.model.service;
+package com.example.excelreader.sabteAsnad.ghasedak.model;
 
 import com.example.excelreader.sabteAsnad.Helper;
 import com.example.excelreader.sabteAsnad.ghasedak.b2b.sadere.entity.B2BSadereEntity;
 import com.example.excelreader.sabteAsnad.ghasedak.b2b.varede.entity.B2BVaredeEntity;
 import com.example.excelreader.sabteAsnad.ghasedak.b2b.sadere.dao.B2BSadereRepository;
 import com.example.excelreader.sabteAsnad.ghasedak.b2b.varede.dao.B2BVaredeRepository;
-import org.springframework.http.ResponseEntity;
+import com.example.excelreader.utility.FTPUtils;
+import com.example.excelreader.utility.ZipUtils;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public record B2BService (B2BSadereRepository b2BSadereRepository,
-                          B2BVaredeRepository b2BVaredeRepository){
+public class B2BService {
 
-    public ResponseEntity<?> saveB2BSadere(MultipartFile multipartFile) {
+    private String varedeDirectory;
+    private String sadereDirectory;
 
-        List<String> list = Helper.getAsList(multipartFile,9);
 
-        List<B2BSadereEntity> b2bList = new ArrayList<>();
+    private B2BSadereRepository b2BSadereRepository;
+    private B2BVaredeRepository b2BVaredeRepository;
+
+    public B2BService(
+        B2BSadereRepository b2BSadereRepository,
+        B2BVaredeRepository b2BVaredeRepository) {
+        this.b2BSadereRepository = b2BSadereRepository;
+        this.b2BVaredeRepository = b2BVaredeRepository;
+    }
+
+    //download from ftp
+    //extract it
+
+    @Scheduled(cron = "${sabt.read.file.cron.job}")
+    public void saveB2BSadere(Path path) throws FileNotFoundException {
+
+        List<String> list = Helper.getAsList(path,9);
+
         for (int i = 0; i < list.size(); i = i + 5) {
             B2BSadereEntity sadere = new B2BSadereEntity();
             sadere.setTransactionId(list.get(i + 1));
@@ -28,16 +46,14 @@ public record B2BService (B2BSadereRepository b2BSadereRepository,
             sadere.setCreditParty(list.get(i + 3));
             sadere.setDepositParty(list.get(i + 4));
             b2BSadereRepository.save(sadere);
-            b2bList.add(sadere);
         }
-        return ResponseEntity.ok().body(b2bList);
     }
 
-    public ResponseEntity<?> saveB2BVarede(MultipartFile multipartFile) {
+    @Scheduled(cron = "${sabt.read.file.cron.job}")
+    public void saveB2BVarede(Path path) throws FileNotFoundException {
 
-        List<String> list = Helper.getAsList(multipartFile,9);
+        List<String> list = Helper.getAsList(path,9);
 
-        List<B2BVaredeEntity> b2bList = new ArrayList<>();
         for (int i = 0; i < list.size(); i = i + 5) {
             B2BVaredeEntity varede = new B2BVaredeEntity();
             varede.setTransactionId(list.get(i + 1));
@@ -45,9 +61,7 @@ public record B2BService (B2BSadereRepository b2BSadereRepository,
             varede.setCreditPartyName(list.get(i + 3));
             varede.setDepositPartyName(list.get(i + 4));
             b2BVaredeRepository.save(varede);
-            b2bList.add(varede);
         }
-        return ResponseEntity.ok().body(b2bList);
     }
 
 

@@ -3,37 +3,57 @@ package com.example.excelreader.sabteAsnad;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.ULocale;
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.web.multipart.MultipartFile;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+@Slf4j
 public class Helper {
 
     private static final String[] HEADERS = {"ردیف", "شعبه", "کدحساب", "شرح حساب", "شرح آرتیکل", "بدهکار", "بستانکار"};
 
-    public static Boolean checkFormat(MultipartFile multipartFile){
-        String fileName = multipartFile.getOriginalFilename();
+    public static Boolean checkFormat(Path path){
+        File file = path.toFile();
+        String fileName = file.getName();
         return fileName.endsWith(".xlsx");
     }
 
-    public static List<String> getAsList (MultipartFile multipartFile, Integer lineNumber) {
+    public static List<String> getAsList (Path path, Integer lineNumber)
+        throws FileNotFoundException {
+        log.info("Try to exchange excel file to list");
         XSSFWorkbook workbook = null;
         DataFormatter dataFormatter = new DataFormatter();
         List<String> list = new ArrayList<>();
+        InputStream inputStream = new FileInputStream(path.toString());
+
         try {
-            workbook = new XSSFWorkbook(multipartFile.getInputStream());
+            workbook = new XSSFWorkbook(inputStream);
         } catch (EncryptedDocumentException | IOException e) {
             e.printStackTrace();
         }
@@ -92,6 +112,13 @@ public class Helper {
                 .getConnection("jdbc:mysql://localhost:3306/sabt",
                         "root",
                         "Pp135642!#%^$@");
+    }
+
+    public static Connection sedanDataConnection() throws SQLException {
+        return DriverManager
+            .getConnection("jdbc:oracle:thin:@10.1.11.26:1521/club",
+                "HAZINE",
+                "1qaz2wsx");
     }
 
     public static String getYesterdayDate() {

@@ -1,12 +1,15 @@
 package com.example.excelreader.sabteAsnad.aria.entity;
 
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
-import java.math.BigInteger;
-import java.time.LocalDate;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter

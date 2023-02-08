@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -37,6 +38,7 @@ public class KarmozdSatnaService {
 
     }
 
+    @Scheduled(cron = "${sabt.create.output.file.cron.job}")
     public void createKarmozdSatnaExcel() throws SQLException, IOException {
 
         String karmozd = "select amount from asnad.aria " +
@@ -50,13 +52,12 @@ public class KarmozdSatnaService {
         Long karmozdAmount = karmozdResultSet.getLong("amount");
         karmozdSatna(karmozdAmount);
 
-        FileOutputStream fos = new FileOutputStream("C:\\Users\\p.alad\\Desktop\\KarmozdSatna.xlsx");
+        FileOutputStream fos = new FileOutputStream(".xlsx");
         this.workbook.write(fos);
         this.workbook.close();
     }
 
-
-    public void karmozdSatna(Long karmozd) throws SQLException {
+    public void karmozdSatna(Long karmozd) {
         sheet.createRow(this.rowCount++).createCell(0)
             .setCellValue("ثبت سند کارمزد دریافتی ساتنا وارده");
         sheet.getRow(this.rowCount - 1).getCell(0)

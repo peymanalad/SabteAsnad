@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -35,6 +36,7 @@ public class KarmozdPayaService {
 
     }
 
+    @Scheduled(cron = "${sabt.create.output.file.cron.job}")
     public void createKarmozdPayaExcel() throws SQLException, IOException {
 
         String query = "select sum(amount) from asnad.aria "
@@ -58,7 +60,7 @@ public class KarmozdPayaService {
 
         karmozd(karmozdAmount);
 
-        FileOutputStream fos = new FileOutputStream("C:\\Users\\p.alad\\Desktop\\KarmozdPaya.xlsx");
+        FileOutputStream fos = new FileOutputStream(".xlsx");
         this.workbook.write(fos);
         this.workbook.close();
     }

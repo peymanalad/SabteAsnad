@@ -7,6 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan("com.example.excelreader.config")
+@PropertySource("classpath:config.properties")
 public class ExcelReaderApplication {
 
     public static void main(String[] args) {
